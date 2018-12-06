@@ -15,6 +15,7 @@ import java.util.List;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobSMS;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
@@ -162,23 +163,23 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        BmobQuery<Post> bmobQuery=new BmobQuery<Post>();
-        //按照时间降序
-        bmobQuery.order("-createdAt");
-        bmobQuery.findObjects(new FindListener<Post>() {
-            @Override
-            public void done(List<Post> object, BmobException e) {
-                if(e==null){
-                    Toast.makeText(MainActivity.this, "查询成功：共"+object.size()+"条数据", Toast.LENGTH_SHORT).show();
-
-                    for(Post post:object){
-                        Log.i(TAG, "查询出的文章的内容是 "+post.getContent());
-                    }
-                }else {
-                    Toast.makeText(MainActivity.this, "查询失败："+e.getMessage()+","+e.getErrorCode(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+//        BmobQuery<Post> bmobQuery=new BmobQuery<Post>();
+//        //按照时间降序
+//        bmobQuery.order("-createdAt");
+//        bmobQuery.findObjects(new FindListener<Post>() {
+//            @Override
+//            public void done(List<Post> object, BmobException e) {
+//                if(e==null){
+//                    Toast.makeText(MainActivity.this, "查询成功：共"+object.size()+"条数据", Toast.LENGTH_SHORT).show();
+//
+//                    for(Post post:object){
+//                        Log.i(TAG, "查询出的文章的内容是 "+post.getContent());
+//                    }
+//                }else {
+//                    Toast.makeText(MainActivity.this, "查询失败："+e.getMessage()+","+e.getErrorCode(), Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
 
 
 //        Post post=new Post();
@@ -194,19 +195,24 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-
-//        Person person=new Person();
-//        person.setName("孙悟空");
-//        person.save(new SaveListener<String>() {
+          //发送短信
+//        long phoneNumber=15735952052L;
+//        BmobSMS.requestSMSCode(String.valueOf(phoneNumber), "某时某刻验证短信", new QueryListener<Integer>() {
 //            @Override
-//            public void done(String s, BmobException e) {
-//                if (e==null){
-//                    Toast.makeText(MainActivity.this, "存入人物数据成功", Toast.LENGTH_SHORT).show();
-//                }else {
-//                    Toast.makeText(MainActivity.this, "存入人物数据失败", Toast.LENGTH_SHORT).show();
+//            public void done(Integer smsId, BmobException e) {
+//                if (e == null) {
+//
+//                    Toast.makeText(MainActivity.this, "发送验证码成功，短信ID："+ smsId + "\n", Toast.LENGTH_SHORT).show();
+//                } else {
+//
+//                    Toast.makeText(MainActivity.this, "发送验证码失败："+ e.getErrorCode() + "-" + e.getMessage() + "\n", Toast.LENGTH_SHORT).show();
 //                }
 //            }
 //        });
+
+
+
+
 
     }
 }
