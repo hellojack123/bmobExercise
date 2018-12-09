@@ -5,12 +5,16 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.bmobexercise.model.adapter.PostAdapter;
 import com.example.bmobexercise.model.bean.Post;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.Bmob;
@@ -27,20 +31,21 @@ import cn.bmob.v3.listener.UploadFileListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG="MainActivity";
+    private static final String TAG = "MainActivity";
+
+    private List<Post> postList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //第一：默认初始化
+        //Bmob默认初始化
         Bmob.initialize(this, "e8ed2b1cb52b2610fb83c967b8ea14a4");
-
 
         //添加数据
 //        Person p2=new Person();
-//        p2.setName("jack");
+//        p2.setName("Jack");
 //        p2.setAddress("shanghai");
 //        p2.save(new SaveListener<String>() {
 //            @Override
@@ -116,12 +121,13 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
         //读取sd卡动态权限申请
+
+        //读取sd卡动态权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
             }
         }
-
 
         //上传单一文件
 //        String picPath="sdcard/Download/QQ图标图片.jpg";
@@ -195,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-          //发送短信
+        //发送短信
 //        long phoneNumber=15735952052L;
 //        BmobSMS.requestSMSCode(String.valueOf(phoneNumber), "某时某刻验证短信", new QueryListener<Integer>() {
 //            @Override
@@ -211,8 +217,41 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
 
-
+        //使用RecycleView加载帖子文字
+        initPosts();//初始化帖子数据
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        postAdapter = new PostAdapter(postList);
+        recyclerView.setAdapter(postAdapter);
 
 
     }
+
+    PostAdapter postAdapter;
+
+    private void initPosts() {
+        BmobQuery<Post> bmobQuery = new BmobQuery<Post>();
+        //按照时间降序
+        bmobQuery.order("-createdAt");
+        bmobQuery.findObjects(new FindListener<Post>() {
+            @Override
+            public void done(List<Post> object, BmobException e) {
+                if (e == null) {
+                    Toast.makeText(MainActivity.this, "查询成功：共" + object.size() + "条数据", Toast.LENGTH_SHORT).show();
+                    for (Post post : object) {
+                        //Log.i(TAG, "查询出的文章的内容是 " + post.getContent());
+                        postList.add(post);
+                        postAdapter.notifyDataSetChanged();
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "查询失败：" + e.getMessage() + "," + e.getErrorCode(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+    }
+
+
 }
